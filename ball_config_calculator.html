@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball Config Chances</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 { 
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        th, td { 
+            border: 1px solid #e8ecf0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+        
+        th { 
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85em;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e3f2fd;
+            transition: background-color 0.2s ease;
+        }
+        
+        .section { 
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e8ecf0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .section > p {
+            font-size: 0.95em;
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        label { 
+            font-weight: 500;
+            color: #495057;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        select { 
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            background: white;
+            color: #495057;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .variants-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e8ecf0;
+        }
+        
+        .variant-item { 
+            display: flex; 
+            align-items: center;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .variant-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+        }
+        
+        .variant-item input[type="checkbox"] { 
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #3498db;
+        }
+        
+        .variant-item input[type="checkbox"]:disabled + label {
+            color: #adb5bd;
+            cursor: not-allowed;
+        }
+        
+        .variant-item input[type="checkbox"]:disabled {
+            cursor: not-allowed;
+        }
+        
+        .variant-item.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .variant-item label {
+            font-weight: 500;
+            cursor: pointer;
+            flex-grow: 1;
+            color: #495057;
+            margin-bottom: 0;
+        }
+        
+        #combinedChanceDisplay { 
+            font-size: 1.1em; 
+            font-weight: 600;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+        }
+        
+        .formula {
+            font-family: 'Inter', monospace;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #e8ecf0;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .toggle-container {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e8ecf0;
+        }
+        
+        .toggle-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .toggle-label input[type="checkbox"] {
+            transform: scale(1.2);
+            accent-color: #3498db;
+        }
+        
+        /* Rarity-specific colors for table rows */
+        tbody tr:nth-child(1) { border-left: 4px solid #95a5a6; } /* Common - Grey */
+        tbody tr:nth-child(2) { border-left: 4px solid #27ae60; } /* Uncommon - Green */
+        tbody tr:nth-child(3) { border-left: 4px solid #3498db; } /* Rare - Blue */
+        tbody tr:nth-child(4) { border-left: 4px solid #9b59b6; } /* Epic - Purple */
+        tbody tr:nth-child(5) { border-left: 4px solid #f1c40f; } /* Legendary - Yellow */
+        tbody tr:nth-child(6) { border-left: 4px solid #e74c3c; } /* Mythic - Red */
+        tbody tr:nth-child(7) { border-left: 4px solid #bdc3c7; } /* Exotic - Light Grey */
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .variants-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ball Configuration Chances</h1>
+
+        <div class="section" id="rarityChancesSection">
+            <h2>Rarity Chances</h2>
+            <p>The individual probability of a ball spawning with a specific rarity, based on its weight relative to the total weight of all rarities.</p>
+            <table>
+                <thead><tr><th>Name</th><th>Weight</th><th>Chance</th></tr></thead>
+                <tbody id="rarityTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section" id="variantChancesSection">
+            <h2>Variant Chances</h2>
+            <p>If a ball is determined to have <strong>one</strong> variant type from this list, this table shows the chance it's a specific one. This assumes variants listed here are mutually exclusive for the purpose of this table's calculation.</p>
+            <table>
+                <thead><tr><th>Name</th><th>Weight</th><th>Chance</th></tr></thead>
+                <tbody id="variantTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section" id="testRaritySection">
+            <h2>Ball Rarity Calculator</h2>
+            <p>
+                Select a base rarity, then add one or more variant traits to calculate the combined probability.
+                The formula used is: 
+                <em>Combined Probability = P(Rarity) × P(VariantTrait<sub>1</sub>) × P(VariantTrait<sub>2</sub>) × ...</em> 
+                where <span class="formula">P(Rarity) = Rarity.Weight / TotalRarityWeight</span>, and <span class="formula">P(VariantTrait) = Variant.Weight / TotalVariantWeight</span>.
+                <br><br><strong>Note:</strong> The "Normal" variant cannot be combined with other variants. Selecting "Normal" will disable other variants, and selecting any other variant will disable "Normal".
+            </p>
+            <div>
+                <label for="raritySelect">Choose Rarity:</label>
+                <select id="raritySelect">
+                    <option value="">-- Select Rarity --</option>
+                </select>
+            </div>
+            <div>
+                <h3>Choose Variant Traits:</h3>
+                <div id="variantCheckboxes" class="variants-grid">
+                    <!-- Checkboxes will be populated by JS -->
+                </div>
+            </div>
+            <div id="combinedChanceDisplay">Combined Chance: N/A</div>
+            
+            <div class="toggle-container">
+                <label for="scientificToggle" class="toggle-label">
+                    <input type="checkbox" id="scientificToggle">
+                    Use Scientific Notation
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Data from BallConfig
+    const BallConfig_RarityLevels = [
+        { Name: "Common",    Size: 1,  Color: "Medium stone grey", Weight: 44.5 },
+        { Name: "Uncommon",  Size: 2,  Color: "Bright green",      Weight: 25 },
+        { Name: "Rare",      Size: 5,  Color: "Bright blue",       Weight: 15 },
+        { Name: "Epic",      Size: 10, Color: "Bright violet",     Weight: 10 },
+        { Name: "Legendary", Size: 18, Color: "Bright yellow",     Weight: 3.5 },
+        { Name: "Mythic",    Size: 25, Color: "Really red",        Weight: 1.5 },
+        { Name: "Exotic",    Size: 36, Color: "Oyster",            Weight: 0.5 }
+    ];
+
+    const BallConfig_Variants = [
+        { Name: "Normal",      Weight: 1000 },
+        { Name: "Glowing",     Weight: 200 },
+        { Name: "Flaming",     Weight: 120 },
+        { Name: "Bouncy",      Weight: 90 },
+        { Name: "Doge",        Weight: 70 },
+        { Name: "Metallic",    Weight: 60 },
+        { Name: "Cubed",       Weight: 50 },
+        { Name: "Tiny",        Weight: 40 },
+        { Name: "Huge",        Weight: 35 },
+        { Name: "Crystal",     Weight: 30 },
+        { Name: "Sticky",      Weight: 30 },
+        { Name: "Toxic",       Weight: 25 },
+        { Name: "Icy",         Weight: 20 },
+        { Name: "Highlighted", Weight: 18 },
+        { Name: "Ghost",       Weight: 15 },
+        { Name: "Electric",    Weight: 12 },
+        { Name: "Shadow",      Weight: 8 },
+        { Name: "Temporal",    Weight: 3 }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const totalRarityWeight = BallConfig_RarityLevels.reduce((sum, r) => sum + r.Weight, 0);
+        const totalVariantWeight = BallConfig_Variants.reduce((sum, v) => sum + v.Weight, 0);
+
+        // Helper for formatting numbers with commas
+        function formatNumberWithCommas(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Helper for formatting percentage and 1-in-X chance
+        function formatChanceString(probabilityDecimal, percentagePrecision = 2, oneInXPrecision = 2, useScientific = false) {
+            if (probabilityDecimal === 0 || !isFinite(probabilityDecimal)) {
+                return "0.00% (Undefined)";
+            }
+            if (probabilityDecimal >= 1) {
+                return `${(probabilityDecimal * 100).toFixed(percentagePrecision)}% (1 in 1)`;
+            }
+
+            const percentage = probabilityDecimal * 100;
+            const oneInX = 1 / probabilityDecimal;
+
+            let percentageStr;
+            if (useScientific && (percentage < 0.001 || percentage >= 1000)) {
+                percentageStr = percentage.toExponential(2) + '%';
+            } else {
+                percentageStr = percentage.toFixed(percentagePrecision) + '%';
+            }
+
+            let oneInXStr;
+            if (useScientific && oneInX >= 1000000) {
+                oneInXStr = `1 in ${oneInX.toExponential(2)}`;
+            } else if (Number.isInteger(oneInX) || Math.abs(oneInX - Math.round(oneInX)) < 1e-9) {
+                const roundedOneInX = Math.round(oneInX);
+                oneInXStr = `1 in ${formatNumberWithCommas(roundedOneInX)}`;
+            } else {
+                const fixedOneInX = oneInX.toFixed(oneInXPrecision);
+                oneInXStr = `1 in ${formatNumberWithCommas(fixedOneInX)}`;
+            }
+            return `${percentageStr} (${oneInXStr})`;
+        }
+
+        // Populate Rarity Chances Table
+        const rarityTableBody = document.getElementById('rarityTableBody');
+        function updateRarityTable() {
+            const useScientific = document.getElementById('scientificToggle').checked;
+            rarityTableBody.innerHTML = '';
+            BallConfig_RarityLevels.forEach(rarity => {
+                const chanceDecimal = rarity.Weight / totalRarityWeight;
+                const row = rarityTableBody.insertRow();
+                row.insertCell().textContent = rarity.Name;
+                row.insertCell().textContent = rarity.Weight;
+                row.insertCell().textContent = formatChanceString(chanceDecimal, 2, 2, useScientific);
+            });
+        }
+
+        // Populate Variant Chances Table
+        const variantTableBody = document.getElementById('variantTableBody');
+        function updateVariantTable() {
+            const useScientific = document.getElementById('scientificToggle').checked;
+            variantTableBody.innerHTML = '';
+            BallConfig_Variants.forEach(variant => {
+                const chanceDecimal = variant.Weight / totalVariantWeight;
+                const row = variantTableBody.insertRow();
+                row.insertCell().textContent = variant.Name;
+                row.insertCell().textContent = variant.Weight;
+                row.insertCell().textContent = formatChanceString(chanceDecimal, 2, 2, useScientific);
+            });
+        }
+
+        // Setup Test Rarity Calculator
+        const raritySelect = document.getElementById('raritySelect');
+        const variantCheckboxesContainer = document.getElementById('variantCheckboxes');
+        const combinedChanceDisplay = document.getElementById('combinedChanceDisplay');
+        const scientificToggle = document.getElementById('scientificToggle');
+        let allVariantCheckboxes = [];
+        let normalCheckbox = null;
+        let otherVariantCheckboxes = [];
+
+        // Populate Rarity Dropdown
+        BallConfig_RarityLevels.forEach((rarity, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = rarity.Name;
+            raritySelect.appendChild(option);
+        });
+
+        // Populate Variant Checkboxes
+        BallConfig_Variants.forEach((variant, index) => {
+            const div = document.createElement('div');
+            div.classList.add('variant-item');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `variant-${variant.Name.replace(/[^a-zA-Z0-9]/g, '-')}-${index}`;
+            checkbox.dataset.weight = variant.Weight;
+            checkbox.dataset.variantName = variant.Name;
+            
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = variant.Name;
+            
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            variantCheckboxesContainer.appendChild(div);
+            allVariantCheckboxes.push(checkbox);
+
+            if (variant.Name === "Normal") {
+                normalCheckbox = checkbox;
+            }
+        });
+        otherVariantCheckboxes = allVariantCheckboxes.filter(cb => cb !== normalCheckbox);
+
+        function handleVariantCheckboxChange(changedCheckbox) {
+            if (normalCheckbox) {
+                if (changedCheckbox === normalCheckbox) {
+                    if (normalCheckbox.checked) {
+                        otherVariantCheckboxes.forEach(cb => {
+                            cb.checked = false;
+                            cb.disabled = true;
+                            cb.parentElement.classList.add('disabled');
+                        });
+                    } else {
+                        otherVariantCheckboxes.forEach(cb => {
+                            cb.disabled = false;
+                            cb.parentElement.classList.remove('disabled');
+                        });
+                    }
+                } else {
+                    const anyOtherChecked = otherVariantCheckboxes.some(cb => cb.checked);
+                    if (anyOtherChecked) {
+                        normalCheckbox.checked = false;
+                        normalCheckbox.disabled = true;
+                        normalCheckbox.parentElement.classList.add('disabled');
+                    } else {
+                        normalCheckbox.disabled = false;
+                        normalCheckbox.parentElement.classList.remove('disabled');
+                    }
+                }
+            }
+            updateCombinedChance();
+        }
+
+        allVariantCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => handleVariantCheckboxChange(cb));
+        });
+
+        raritySelect.addEventListener('change', () => {
+            allVariantCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = false;
+                cb.parentElement.classList.remove('disabled');
+            });
+            updateCombinedChance();
+        });
+
+        // Add event listener for scientific notation toggle
+        scientificToggle.addEventListener('change', () => {
+            updateRarityTable();
+            updateVariantTable();
+            updateCombinedChance();
+        });
+
+        function updateCombinedChance() {
+            const selectedRarityIndex = raritySelect.value;
+            const useScientific = scientificToggle.checked;
+
+            if (selectedRarityIndex === "") {
+                combinedChanceDisplay.textContent = 'Combined Chance: N/A (Please select a rarity)';
+                return;
+            }
+
+            const selectedRarity = BallConfig_RarityLevels[parseInt(selectedRarityIndex)];
+            let finalProbability = selectedRarity.Weight / totalRarityWeight;
+
+            const selectedVariantCheckboxes = allVariantCheckboxes.filter(cb => cb.checked);
+            
+            if (selectedVariantCheckboxes.length > 0) {
+                selectedVariantCheckboxes.forEach(checkbox => {
+                    const variantWeight = parseFloat(checkbox.dataset.weight);
+                    finalProbability *= (variantWeight / totalVariantWeight);
+                });
+            }
+
+            let displayText;
+            if (finalProbability === 0 || !isFinite(finalProbability)) {
+                displayText = `Combined Chance: 0.000000% (Undefined)`;
+            } else {
+                const formattedChance = formatChanceString(finalProbability, 6, 2, useScientific);
+                displayText = `Combined Chance: ${formattedChance}`;
+            }
+            combinedChanceDisplay.textContent = displayText;
+        }
+
+        // Initialize tables and calculator
+        updateRarityTable();
+        updateVariantTable();
+        updateCombinedChance();
+    });
+    </script>
+</body>
+</html>
