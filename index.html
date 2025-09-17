@@ -336,26 +336,35 @@
         }
 
         function updateComparisons(finalProbability) {
-            comparisonList.innerHTML = '';
-            if (finalProbability <= 0 || !isFinite(finalProbability)) {
-                const li = document.createElement('li'); li.textContent = "N/A (no valid chance selected)"; comparisonList.appendChild(li); return;
+    comparisonList.innerHTML = '';
+    if (finalProbability <= 0 || !isFinite(finalProbability)) {
+        const li = document.createElement('li');
+        li.textContent = "N/A (no valid chance selected)";
+        comparisonList.appendChild(li);
+        return;
+    }
+
+    comparisons.forEach(c => {
+        const li = document.createElement('li');
+        if (finalProbability > c.probability) {
+            // Ball is more common
+            const times = (finalProbability / c.probability).toFixed(2);
+            li.textContent = `Your ball is about ${times}× more likely than ${c.name}`;
+        } else {
+            // Ball is rarer → how many times winning that event would match
+            const ratio = (c.probability / finalProbability);
+            const times = Math.round(Math.log(ratio) / Math.log(1 / c.probability));
+            if (times > 1) {
+                li.textContent = `Your ball is as rare as ${c.name} happening ${times} times in a row!`;
+            } else {
+                const factor = (1 / ratio).toFixed(2);
+                li.textContent = `Your ball is about ${factor}× less likely than ${c.name}`;
             }
-            comparisons.forEach(c => {
-                const ratio = finalProbability / c.probability;
-                const li = document.createElement('li');
-                if (finalProbability > c.probability) {
-                    li.textContent = `Your ball is MORE likely than ${c.name} (≈ ${ratio.toFixed(2)}x more likely)`;
-                } else {
-                    li.textContent = `Your ball is LESS likely than ${c.name} (≈ ${(1/ratio).toFixed(2)}x less likely)`;
-                }
-                const extra = [];
-                const coin = coinFlipEquivalent(finalProbability); if (coin) extra.push(coin);
-                const lottoPowerball = lotteryEquivalent(finalProbability, 1/292200000, "Powerball"); if (lottoPowerball) extra.push(lottoPowerball);
-                const lottoMega = lotteryEquivalent(finalProbability, 1/302600000, "Mega Millions"); if (lottoMega) extra.push(lottoMega);
-                if (extra.length > 0) li.textContent += " — " + extra.join(", ");
-                comparisonList.appendChild(li);
-            });
         }
+        comparisonList.appendChild(li);
+    });
+}
+
 
         function updateCombinedChance() {
             const selectedRarityIndex = raritySelect.value;
